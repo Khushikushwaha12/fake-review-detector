@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Guard Pro | AI Detector</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Review Verifier Pro</h1>
+        <p>AI-powered tool to detect fake or spam product reviews.</p>
+        
+        <form action="/predict" method="post" id="reviewForm">
+            <textarea name="review" id="reviewArea" placeholder="Paste your review here..." required>{{ text if text else '' }}</textarea>
+            
+            <div class="button-group">
+                <button type="submit">Analyze Now</button>
+                <button type="button" onclick="clearAll()" class="clear-btn">Clear</button>
+            </div>
+        </form>
+
+        {% if prediction %}
+            <div id="result" class="{{ 'real' if prediction == 'REAL' else 'fake' }}">
+                <h3>{{ "✅ REAL REVIEW" if prediction == 'REAL' else "🚫 FAKE / SPAM" }}</h3>
+                <p>AI Confidence: {{ confidence }}%</p>
+                
+                <div class="confidence-bar">
+                    <div id="barFill" class="fill"></div>
+                </div>
+            </div>
+        {% endif %}
+        
+        <div class="samples">
+            <p>Try these samples:</p>
+            <button type="button" onclick="fillSample('This camera quality is excellent and battery lasts all day.')">Real Review</button>
+            <button type="button" onclick="fillSample('CONGRATULATIONS! You won a $1000 Gift Card! Click here to claim.')">Spam/Fake</button>
+        </div>
+    </div>
+
+    <script>
+        // 1. Fill Sample Text
+        function fillSample(sampleText) {
+            document.getElementById('reviewArea').value = sampleText;
+        }
+
+        // 2. Clear All Text and Hide Results
+        function clearAll() {
+            document.getElementById('reviewArea').value = '';
+            const resultBox = document.getElementById('result');
+            if (resultBox) {
+                resultBox.style.display = 'none';
+            }
+        }
+
+        // 3. Set Confidence Bar Width (Error-Free Way)
+        // Ye hissa tabhi chalega jab prediction load hogi
+        var confidenceValue = "{{ confidence }}"; 
+        if (confidenceValue && document.getElementById('barFill')) {
+            document.getElementById('barFill').style.width = confidenceValue + "%";
+        }
+    </script>
+</body>
+</html>
